@@ -46,6 +46,9 @@ def testDbComment(db):
     arr02 = testDbColumns(testConn, proConn, db, columns)
     print('arr01', arr01)
     print('arr02', arr02)
+    # size = countDataSize(testConn, proConn, db, tables, columns)
+    # print('size', size)
+    # return size
 
 
 def testDbTables(testConn, proConn, db, tables):
@@ -158,6 +161,36 @@ def writeFile(sql, fileName):
     pass
 
 
+def countDataSize(testConn, proConn, db, tables, columns):
+    arr01 = []
+    tablesDataList = testConn.ExecuteSql(f"SELECT * FROM `{tables}` WHERE table_schema='{db}' AND table_comment='' ;")
+
+    for tablesData in tablesDataList:
+        print('tablesData===', tablesData)
+        sizeData = proConn.ExecuteSql(f"SELECT count(1) FROM `{tablesData[2]}`;")
+        print('sizeData===', sizeData)
+        print('sizeData[0]===', sizeData[0])
+        print('sizeData[0][0]===', sizeData[0][0])
+        if int(sizeData[0][0]) > 10000000:
+            arr01.append(tablesData[2])
+
+    columnsDataList = testConn.ExecuteSql(f"SELECT * FROM `{columns}` WHERE table_schema='{db}' AND column_comment='';")
+    for columnsData in columnsDataList:
+        print('columnsData', columnsData)
+        sizeData = proConn.ExecuteSql(f"SELECT count(1) FROM `{columnsData[2]}`;")
+        print('sizeData===', sizeData)
+        print('sizeData[0]===', sizeData[0])
+        print('sizeData[0][0]===', sizeData[0][0])
+        if int(sizeData[0][0]) > 10000000:
+            arr01.append(columnsData[2])
+    return list(set(arr01))
+
+
 if __name__ == '__main__':
+    # sizegps = testDbComment('gps')
+    # print('sizegps', sizegps)
+    # sizeneshield = testDbComment('neshield')
+    # print('sizeneshield', sizeneshield)
+
     testDbComment('gps')
     testDbComment('neshield')
